@@ -2,17 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a30f4626-a327-4d64-8ce4-24038c93aa65" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/friend.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/friend_list.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/hendrix_potty_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/hendrix_potty_android.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -25,6 +29,9 @@
     </option>
   </component>
   <component name="ProjectId" id="1hxoaS2urur0mk5ZxajBD5ZabCO" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -50,14 +57,18 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="413" y="163" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1601514307951">
+      <screen x="0" y="23" width="1440" height="812" />
+    </state>
+    <state x="413" y="163" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.1440.812@0.23.1440.812" timestamp="1601514307951" />
     <state x="120" y="143" width="1211" height="571" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1601508001158">
       <screen x="0" y="23" width="1440" height="812" />
     </state>
     <state x="120" y="143" width="1211" height="571" key="com.android.tools.idea.avdmanager.AvdListDialog/0.23.1440.812/-1920.-62.1920.1057@0.23.1440.812" timestamp="1601308595709" />
     <state x="120" y="143" width="1211" height="571" key="com.android.tools.idea.avdmanager.AvdListDialog/0.23.1440.812@0.23.1440.812" timestamp="1601508001158" />
-    <state x="396" y="261" key="com.intellij.ide.util.TipDialog" timestamp="1600962174303">
+    <state x="396" y="261" key="com.intellij.ide.util.TipDialog" timestamp="1601514795367">
       <screen x="0" y="23" width="1440" height="812" />
     </state>
-    <state x="396" y="261" key="com.intellij.ide.util.TipDialog/0.23.1440.812@0.23.1440.812" timestamp="1600962174303" />
+    <state x="396" y="261" key="com.intellij.ide.util.TipDialog/0.23.1440.812@0.23.1440.812" timestamp="1601514795367" />
   </component>
 </project>
