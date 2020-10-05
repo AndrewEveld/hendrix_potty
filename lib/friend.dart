@@ -4,8 +4,9 @@ class Friend {
 
   Friend(this.ipAddress, this.name);
 
-  Friend.fromJson(String jsonString) {
-    
+  Friend.fromJson(Map<String, dynamic> jsonObject) {
+    this.ipAddress = jsonObject['ipAddress'];
+    this.name = jsonObject['name'];
   }
 
   void sendPottyAlertToFriend() {
@@ -14,8 +15,8 @@ class Friend {
 
   String convertToJson() {
     String jsonString = '{';
-    jsonString += 'ipAddress: "' + this.ipAddress + '",';
-    jsonString += 'name: "' + this.name + '"';
+    jsonString += '"ipAddress": "' + this.ipAddress + '",';
+    jsonString += '"name": "' + this.name + '"';
     jsonString += '}';
     return jsonString;
   }
