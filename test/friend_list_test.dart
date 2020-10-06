@@ -68,7 +68,8 @@ void main() {
 
   test("Convert json string to empty friends list", () {
     String jsonToConvert = '{"friends": []}';
-    FriendList convertedFriendList = FriendList.fromJson(jsonToConvert);
+    FriendList convertedFriendList = FriendList();
+    convertedFriendList.fromJson(jsonToConvert);
     expect(convertedFriendList.friends.length, 0);
   });
 
@@ -76,7 +77,8 @@ void main() {
     String testIp = "testIpAddress";
     String testName = "testName";
     String jsonToConvert = '{"friends": [{"ipAddress": "$testIp","name": "$testName"}]}';
-    FriendList convertedFriendList = FriendList.fromJson(jsonToConvert);
+    FriendList convertedFriendList = FriendList();
+    convertedFriendList.fromJson(jsonToConvert);
     Friend expectedFriend = convertedFriendList.friends.elementAt(0);
     expect(convertedFriendList.friends.length, 1);
     expect(expectedFriend.ipAddress, testIp);

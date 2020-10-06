@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:hendrix_potty/friend.dart';
 
-class FriendList {
+class FriendList extends JsonConvertible {
   List<Friend> friends;
 
+  @override
   FriendList() {
     this.friends = List();
   }
 
-  FriendList.fromJson(String jsonString) {
+  @override
+  fromJson(String jsonString) {
     this.friends = List();
     Map<String, dynamic> jsonObject = jsonDecode(jsonString);
     List<dynamic> jsonFriendList = jsonObject["friends"];
@@ -18,10 +20,11 @@ class FriendList {
     }
   }
 
-  void addFriend(Friend friendToAdd) {
+  addFriend(Friend friendToAdd) {
     this.friends.add(friendToAdd);
   }
 
+  @override
   String convertToJson() {
     String jsonString = '{"friends": [';
     for (Friend friend in this.friends) {
@@ -36,4 +39,12 @@ class FriendList {
   String removeTrailingChar(String stringToModify) {
     return stringToModify.substring(0, stringToModify.length - 1);
   }
+}
+
+abstract class JsonConvertible {
+  JsonConvertible();
+
+  String convertToJson();
+
+  fromJson(String jsonString);
 }
