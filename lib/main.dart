@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hendrix_potty/friend_screen.dart';
+import 'package:hendrix_potty/friend.dart';
+import 'package:hendrix_potty/friend_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'The Hendrix Potty',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -55,23 +59,70 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String currentPottyType = "Happy";
+  String connectionMessage = "";
+  TextStyle _ts;
+  int ourPort = 6666;
+  FriendList friends;
+
 
   void initState() {
     super.initState();
+    setupServer();
   }
+
+  Future<void> setupServer() async {
+    try {
+      ServerSocket server =
+      await ServerSocket.bind(InternetAddress.anyIPv4, ourPort);
+      server.listen(listenToSocket); // StreamSubscription<Socket>
+    } on SocketException catch (e) {
+      connectionMessage = e.message;
+    }
+  }
+
+  void listenToSocket(Socket socket) {
+    socket.listen((data) {
+      setState(() {
+        handleIncomingAlert(socket.remoteAddress.address, data);
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    _ts = Theme.of(context).textTheme.headline4;
     return Scaffold(
       appBar: AppBar(
-        title: Text("title"),
+        title: Text("Hendrix Potty"),
       ),
       body: Center(
         child: Column(
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            DropdownButton(
+              value: currentPottyType,
+              onChanged: (String newPotty) {
+                setState(() {
+                  print("Type changed to " + newPotty);
+                  currentPottyType = newPotty;
+                });
+              },
+              items: ["Happy", "Sad"].map((String pottyType) {
+                return DropdownMenuItem(
+                  value: pottyType,
+                  child: Row(
+                    children: <Widget>[
+                      Text(pottyType, style: _ts),
+                    ],
+                  ),
+                );
+              }
+              ).toList(),
+            ),
+
             RaisedButton(
               onPressed: null,
               child: Text("Send"),
@@ -82,14 +133,52 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text("Friends List"),
             ),
+            Flexible(
+                child: new Text(connectionMessage, style: _ts)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+    );
+  }
+
+  Widget recieveAlert() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: <Widget> [
+            Flexible(
+                child: new Text("You have recieved a potty alert of _____ in the location ______ from ______", style: _ts)),
+            RaisedButton(
+              onPressed: null,
+              child: Text("Save"),
+            ),
+            RaisedButton(
+              onPressed: null,
+              child: Text("Discard"),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> send(String alert) async {
+    String response = await sendToCurrentFriend(alert);
+    setState(() {
+      connectionMessage = response;
+    });
+  }
+
+  Future<String> sendToCurrentFriend(String pottyAlert) async {
+    if (friends.friends.length != 0) {
+      SocketOutcome sent = await friends.friends[0].sendTo(pottyAlert);
+      if (sent.sent) {
+        return "";
+      } else {
+        return sent.errorMessage;
+      }
+    } else {
+      return "Can't send, No Friends";
+    }
   }
 }
