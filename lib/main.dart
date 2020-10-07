@@ -5,6 +5,7 @@ import 'package:hendrix_potty/alert_screen.dart';
 import 'package:hendrix_potty/friend_screen.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
+import 'package:hendrix_potty/send_receive.dart';
 
 void main() {
   runApp(MyApp());
@@ -70,11 +71,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void initState() {
     super.initState();
+    friends = FriendList();
+    friends.addFriend(Friend("127.0.0.1", "Self"));
+    waitForMessage().then((value) {print("In then");});
+  }
+
+  Future<void> waitForMessage() async {
+    print("waiting");
+    SendReceive handler = SendReceive();
+    String receivedMessage = await handler.setupServer();
+    print(receivedMessage);
   }
 
   @override
   Widget build(BuildContext context) {
     _ts = Theme.of(context).textTheme.headline4;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Hendrix Potty"),
@@ -106,12 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             RaisedButton(
-              onPressed: null,
+              onPressed: () {SendReceive().send("Happy", Friend("127.0.0.1", "Self"));},
               child: Text("Send"),
             ),
             RaisedButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/alert");
+                Navigator.pushNamed(context, "/friends");
               },
               child: Text("Friends List"),
             ),
@@ -123,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget recieveAlert() {
+  Widget receiveAlert() {
     return Scaffold(
       body: Center(
         child: Column(
@@ -135,32 +147,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Save"),
             ),
             RaisedButton(
-              onPressed: () {send(currentPottyType);},
+              onPressed: () {},
               child: Text("Discard"),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> send(String alert) async {
-    String response = await sendToCurrentFriend(alert);
-    setState(() {
-      connectionMessage = response;
-    });
-  }
-
-  Future<String> sendToCurrentFriend(String pottyAlert) async {
-    if (friends.friends.length != 0) {
-      SocketOutcome sent = await friends.friends[0].sendTo(pottyAlert);
-      if (sent.sent) {
-        return "";
-      } else {
-        return sent.errorMessage;
-      }
-    } else {
-      return "Can't send, No Friends";
-    }
   }
 }
