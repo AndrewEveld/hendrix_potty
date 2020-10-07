@@ -19,14 +19,16 @@ class ReadAndWriteData {
   }
 
 
-  Future<File> writeJsonToFile(JsonConvertible objectToWrite) async {
+  Future<File> writeJsonToFile(JsonConvertible objectToWrite, String dataType) async {
     print("writing");
+    filename = dataType;
     final file = await _localFile;
     return file.writeAsString(objectToWrite.convertToJson());
   }
 
-  Future<JsonConvertible> readData(JsonConvertible objectToRead) async {
+  Future<JsonConvertible> readData(JsonConvertible objectToRead, String dataType) async {
     try {
+      filename = dataType;
       final file = await _localFile;
       String contents = await file.readAsString();
       objectToRead.fromJson(contents);

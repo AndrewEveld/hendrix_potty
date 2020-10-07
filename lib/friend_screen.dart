@@ -21,6 +21,13 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
+  FriendList listOfFriends;
+
+  init() {
+    super.initState();
+    listOfFriends = FriendList();
+    listOfFriends.addFriend(Friend("127.0.0.1", "Self"));
+  }
 
   @override
   Widget build(BuildContext context) {
