@@ -68,27 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void initState() {
     super.initState();
-    setupServer();
   }
-
-  Future<void> setupServer() async {
-    try {
-      ServerSocket server =
-      await ServerSocket.bind(InternetAddress.anyIPv4, ourPort);
-      server.listen(listenToSocket); // StreamSubscription<Socket>
-    } on SocketException catch (e) {
-      connectionMessage = e.message;
-    }
-  }
-
-  void listenToSocket(Socket socket) {
-    socket.listen((data) {
-      setState(() {
-        handleIncomingAlert(socket.remoteAddress.address, data);
-      });
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
