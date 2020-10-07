@@ -3,34 +3,39 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'friend.dart';
+import 'package:flutter/material.dart';
+
 
 class SendReceive {
   int ourPort = 6666;
   String receivedString;
 
-  Future<String> setupServer() async {
+  Future<String> setupServer(BuildContext context) async {
     try {
       print("waiting for message");
       ServerSocket server =
       await ServerSocket.bind(InternetAddress.anyIPv4, ourPort);
-      server.listen(_listenToSocket); // StreamSubscription<Socket>
+      server.listen((data) {
+        receivedString = _listenToSocket(data, context);
+      }); // StreamSubscription<Socket>
       return receivedString;
     } on SocketException catch (e) {
       return e.message;
     }
   }
 
-   _listenToSocket(Socket socket) {
+   String _listenToSocket(Socket socket, BuildContext context) {
     String dataReceived;
     socket.listen((data) {
-      dataReceived = _handleIncomingMessage(socket.remoteAddress.address, data);
+      dataReceived = _handleIncomingMessage(socket.remoteAddress.address, data, context);
     });
     return dataReceived;
   }
 
-   _handleIncomingMessage(String ip, Uint8List incomingData) {
+   _handleIncomingMessage(String ip, Uint8List incomingData, BuildContext context) {
     String received = String.fromCharCodes(incomingData);
     print("Received '$received' from '$ip'");
+    Navigator.pushNamed(context, "/alert");
     receivedString = received;
   }
 

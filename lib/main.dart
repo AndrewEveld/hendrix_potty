@@ -73,13 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     friends = FriendList();
     friends.addFriend(Friend("127.0.0.1", "Self"));
-    waitForMessage().then((value) {print("In then");});
+    setupSocket().then((value) {print("In then");});
   }
 
-  Future<void> waitForMessage() async {
+  Future<void> setupSocket() async {
     print("waiting");
     SendReceive handler = SendReceive();
-    String receivedMessage = await handler.setupServer();
+    String receivedMessage = await handler.setupServer(context);
     print(receivedMessage);
   }
 
@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
 
   Widget receiveAlert() {
     return Scaffold(
