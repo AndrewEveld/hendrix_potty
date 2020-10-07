@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hendrix_potty/alert_screen.dart';
 import 'package:hendrix_potty/friend_screen.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => MyHomePage(),
-        '/friends': (context) => FriendPage()
+        '/friends': (context) => FriendPage(),
+        '/alert': (context) => AlertPage()
       },
     );
   }
@@ -109,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/friends");
+                Navigator.pushNamed(context, "/alert");
               },
               child: Text("Friends List"),
             ),
@@ -133,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Save"),
             ),
             RaisedButton(
-              onPressed: null,
+              onPressed: () {send(currentPottyType);},
               child: Text("Discard"),
             ),
           ],
