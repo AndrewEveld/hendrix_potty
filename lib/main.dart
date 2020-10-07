@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hendrix_potty/alert_screen.dart';
 import 'package:hendrix_potty/friend_screen.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => MyHomePage(),
-        '/friends': (context) => FriendPage()
+        '/friends': (context) => FriendPage(),
+        '/alert': (context) => AlertPage()
       },
     );
   }
@@ -75,19 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       ServerSocket server =
       await ServerSocket.bind(InternetAddress.anyIPv4, ourPort);
-      server.listen(listenToSocket); // StreamSubscription<Socket>
+     // server.listen(listenToSocket); // StreamSubscription<Socket>
     } on SocketException catch (e) {
       connectionMessage = e.message;
     }
   }
 
-  void listenToSocket(Socket socket) {
+  /* void listenToSocket(Socket socket) {
     socket.listen((data) {
       setState(() {
         handleIncomingAlert(socket.remoteAddress.address, data);
       });
     });
-  }
+  } */
 
 
   @override
@@ -129,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/friends");
+                Navigator.pushNamed(context, "/alert");
               },
               child: Text("Friends List"),
             ),
@@ -153,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Save"),
             ),
             RaisedButton(
-              onPressed: null,
+              onPressed: () {send(currentPottyType);},
               child: Text("Discard"),
             ),
           ],
