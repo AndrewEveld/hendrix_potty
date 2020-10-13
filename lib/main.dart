@@ -6,6 +6,7 @@ import 'package:hendrix_potty/friend_screen.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
 import 'package:hendrix_potty/send_receive.dart';
+import 'package:hendrix_potty/sending_screen.dart';
 import 'package:hendrix_potty/writing_screen.dart';
 
 void main() {
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => MyHomePage(),
         '/friends': (context) => FriendPage(),
         '/alert': (context) => AlertPage(),
-        '/writing': (context) => WritingPage()
+        '/writing': (context) => WritingPage(),
+        '/sending': (context) => SendingPage()
       },
     );
   }
@@ -102,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Write New Alert"),
             ),
             RaisedButton(
-              onPressed: () {Navigator.pushNamed(context, "/writing");},
+              onPressed: () {Navigator.pushNamed(context, "/sending");},
               child: Text("Send Potty Alert"),
             ),
             RaisedButton(
