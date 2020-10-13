@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hendrix_potty/send_receive.dart';
+
+import 'friend.dart';
 
 class SendingPage extends StatefulWidget {
   SendingPage({Key key, this.title}) : super(key: key);
@@ -82,7 +85,7 @@ class _SendingPageState extends State<SendingPage> {
             ),
             RaisedButton(
               onPressed: () {
-
+                SendReceive().send("Happy", Friend("127.0.0.1", "Self"));
                 Navigator.pop(context);
               },
               child: Text("Send Alert"),

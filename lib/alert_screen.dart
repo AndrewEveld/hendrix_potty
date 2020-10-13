@@ -35,6 +35,7 @@ class _AlertPageState extends State<AlertPage> {
                 child: new Text("You have recieved a potty alert of _____ in the location ______ from ______", style: Theme.of(context).textTheme.headline4)),
             RaisedButton(
               onPressed: () {
+                // SAVE POTTY ALERT SOMEHOW USING JSON FILES
                 Navigator.pop(context);
               },
               child: Text("Save"),
