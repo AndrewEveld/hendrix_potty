@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
+import 'package:hendrix_potty/read_and_write_data.dart';
+import 'package:string_validator/string_validator.dart';
 
 class FriendPage extends StatefulWidget {
   FriendPage({Key key, this.title}) : super(key: key);
@@ -23,10 +25,18 @@ class FriendPage extends StatefulWidget {
 class _FriendPageState extends State<FriendPage> {
   FriendList listOfFriends;
 
-  init() {
+  @override
+  initState() {
     super.initState();
     listOfFriends = FriendList();
-    listOfFriends.addFriend(Friend("127.0.0.1", "Self"));
+    Friend self = Friend("172.0.0.1", "Self");
+    listOfFriends.addFriend(self);
+    loadFriendsFromMemory().then((friendsList) {
+      setState(() {
+        print(friendsList.friends);
+        listOfFriends = friendsList;
+      });
+    });
   }
 
   @override
@@ -35,23 +45,16 @@ class _FriendPageState extends State<FriendPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Friends"),
+        actions: getActionIcons(),
       ),
       body: Center(
         child: ListView(
-          children: <Widget>[
-            Text("Friend 1"),
-            Text("Friend 2"),
-            Text("Friend 3"),
-            Text("Friend 4"),
-          ],
+          children: createFriendListWidget(listOfFriends),
         ),
       ),
     );
   }
 
-  Widget createFriendListElement(Friend friendForElement) {
-    return Text(friendForElement.name);
-  }
 
   List<Widget> createFriendListWidget(FriendList friendListForWidgetList) {
     List<Widget> listToReturn = List();
@@ -60,5 +63,114 @@ class _FriendPageState extends State<FriendPage> {
       listToReturn.add(elementToAdd);
     }
     return listToReturn;
+  }
+
+  Widget createFriendListElement(Friend friendForElement) {
+    return GestureDetector(
+      child: Container(
+        height: 50,
+        color: Colors.deepOrangeAccent,
+        child: Center(child: Text(friendForElement.name)),
+      ),
+      onTap: addFriend,
+    );
+  }
+
+  Future<FriendList> loadFriendsFromMemory() async {
+    FriendList toReturn = FriendList();
+    toReturn = await ReadAndWriteData().readData(toReturn, "FriendListFile");
+    return toReturn;
+  }
+
+  Future<void> writeFriendsListToMemory() async {
+    await ReadAndWriteData().writeJsonToFile(listOfFriends, "FriendListFile");
+  }
+
+  List<Widget> getActionIcons() {
+    List<Widget> toReturn = List();
+    toReturn.add(addFriendIcon());
+    return toReturn;
+  }
+
+  Widget addFriendIcon() {
+    return IconButton(
+        icon: const Icon(Icons.account_circle),
+        tooltip: "Add a Friend",
+        onPressed: promptFriendDialog,
+    );
+  }
+
+  void addFriend() {
+    setState(() {
+      listOfFriends.addFriend(Friend("IP", "New Friend"));
+    });
+    writeFriendsListToMemory().then((value) {
+      print("Data saved");
+    });
+
+  }
+  // inspired by Hendrix Cat Finder https://github.com/ericpinter/hendrix_cat_finder
+  Future<void> promptFriendDialog() async {
+    await showDialog(
+      context: context,
+      builder: (_) => FriendAlertDialog().build(context),
+      barrierDismissible: true,
+    ).then((ip) {
+      if (ip != null) {
+        setState(() {
+          listOfFriends.addFriend(Friend(ip, "Friend $ip"));
+        });
+      }
+      print(ip);
+    });
+  }
+
+
+}
+
+// Inspired by the Hendrix Cat Finder App https://github.com/ericpinter/hendrix_cat_finder
+class FriendAlertDialog {
+  final _formKey = GlobalKey<FormState>();
+  String friendIp;
+
+  Widget build(BuildContext context) {
+    return AlertDialog(
+        title: Text("Add a new friend"),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'IP address',
+                ),
+                onSaved: (ip) {
+                  friendIp = ip;
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  } else if (!isIP(value, 4)) {
+                    return 'Please enter a valid IPv4 address';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          RaisedButton(
+            onPressed: () {
+              if (_formKey.currentState.validate()) {
+                _formKey.currentState.save();
+                Navigator.pop(context, friendIp);
+              }
+            },
+            child: Text("Submit"),
+          )
+        ]);
   }
 }

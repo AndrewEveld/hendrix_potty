@@ -27,16 +27,16 @@ class SendReceive {
    String _listenToSocket(Socket socket, BuildContext context) {
     String dataReceived;
     socket.listen((data) {
-      dataReceived = _handleIncomingMessage(socket.remoteAddress.address, data, context);
+      dataReceived = _handleIncomingMessage(socket.address.address, data, context);
     });
     return dataReceived;
   }
 
-   _handleIncomingMessage(String ip, Uint8List incomingData, BuildContext context) {
+   String _handleIncomingMessage(String ip, Uint8List incomingData, BuildContext context) {
     String received = String.fromCharCodes(incomingData);
     print("Received '$received' from '$ip'");
-    Navigator.pushNamed(context, "/alert");
-    receivedString = received;
+    Navigator.pushNamed(context, "/alert", arguments: received);
+    return received;
   }
 
   Future<void> send(String alert, Friend friendToSend) async {

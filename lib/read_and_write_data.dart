@@ -15,15 +15,15 @@ class ReadAndWriteData {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/$filename');
+    return File('$path/$filename.json');
   }
 
 
-  Future<File> writeJsonToFile(JsonConvertible objectToWrite, String dataType) async {
+  Future<void> writeJsonToFile(JsonConvertible objectToWrite, String dataType) async {
     print("writing");
     filename = dataType;
     final file = await _localFile;
-    return file.writeAsString(objectToWrite.convertToJson());
+    file.writeAsString(objectToWrite.convertToJson());
   }
 
   Future<JsonConvertible> readData(JsonConvertible objectToRead, String dataType) async {
@@ -31,10 +31,13 @@ class ReadAndWriteData {
       filename = dataType;
       final file = await _localFile;
       String contents = await file.readAsString();
+      print(contents);
       objectToRead.fromJson(contents);
+      print("reading successful");
       return objectToRead;
     }
     catch (e) {
+      print("Reading failed");
       return objectToRead;
     }
   }
