@@ -21,6 +21,7 @@ class AlertPage extends StatefulWidget {
 }
 
 class _AlertPageState extends State<AlertPage> {
+  List<List> savedAlerts = [];
 
   @override
   Widget build(BuildContext context) {

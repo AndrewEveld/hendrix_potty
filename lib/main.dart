@@ -6,6 +6,7 @@ import 'package:hendrix_potty/friend_screen.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
 import 'package:hendrix_potty/send_receive.dart';
+import 'package:hendrix_potty/writing_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => MyHomePage(),
         '/friends': (context) => FriendPage(),
-        '/alert': (context) => AlertPage()
+        '/alert': (context) => AlertPage(),
+        '/writing': (context) => WritingPage()
       },
     );
   }
@@ -62,7 +64,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String currentPottyType = "Happy";
   String connectionMessage = "";
   TextStyle _ts;
   int ourPort = 6666;
@@ -96,30 +97,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            DropdownButton(
-              value: currentPottyType,
-              onChanged: (String newPotty) {
-                setState(() {
-                  print("Type changed to " + newPotty);
-                  currentPottyType = newPotty;
-                });
-              },
-              items: ["Happy", "Sad"].map((String pottyType) {
-                return DropdownMenuItem(
-                  value: pottyType,
-                  child: Row(
-                    children: <Widget>[
-                      Text(pottyType, style: _ts),
-                    ],
-                  ),
-                );
-              }
-              ).toList(),
-            ),
-
             RaisedButton(
-              onPressed: () {SendReceive().send("Happy", Friend("127.0.0.1", "Self"));},
-              child: Text("Send"),
+              onPressed: () {Navigator.pushNamed(context, "/writing");},
+              child: Text("Write New Alert"),
+            ),
+            RaisedButton(
+              onPressed: () {Navigator.pushNamed(context, "/writing");},
+              child: Text("Send Potty Alert"),
             ),
             RaisedButton(
               onPressed: () {
@@ -129,28 +113,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Flexible(
                 child: new Text(connectionMessage, style: _ts)),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  Widget receiveAlert() {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: <Widget> [
-            Flexible(
-                child: new Text("You have recieved a potty alert of _____ in the location ______ from ______", style: _ts)),
-            RaisedButton(
-              onPressed: null,
-              child: Text("Save"),
-            ),
-            RaisedButton(
-              onPressed: () {},
-              child: Text("Discard"),
-            ),
           ],
         ),
       ),
