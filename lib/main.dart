@@ -15,8 +15,10 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'The Hendrix Potty',
       theme: ThemeData(
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -99,25 +101,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              onPressed: () {Navigator.pushNamed(context, "/writing");},
-              child: Text("Write New Alert"),
-            ),
-            RaisedButton(
-              onPressed: () {Navigator.pushNamed(context, "/sending");},
-              child: Text("Send Potty Alert"),
-            ),
-            RaisedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "/friends");
-              },
-              child: Text("Friends List"),
-            ),
+            uniformButton("/writing", "Write New Potty Alert"),
+            SizedBox(height:20),
+            uniformButton("/sending", "Send Potty Alert"),
+            SizedBox(height:20),
+            uniformButton("/friends", "Friends List"),
             Flexible(
                 child: new Text(connectionMessage, style: _ts)),
           ],
         ),
       ),
+    );
+  }
+
+  // Inspired by the Boggle App https://github.com/Haedge/Project-2
+  Widget uniformButton(String route, String buttonText) {
+    return Container(
+      width: 300,
+      height: 50,
+      child:RaisedButton(
+          child: Text(buttonText),
+          color: Colors.deepOrangeAccent,
+          onPressed: () {
+            Navigator.pushNamed(context, route);
+          }
+        ),
     );
   }
 }

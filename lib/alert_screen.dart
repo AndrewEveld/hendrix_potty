@@ -26,13 +26,14 @@ class _AlertPageState extends State<AlertPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement friend get from storage
+    final String args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
             Flexible(
-                child: new Text("You have recieved a potty alert of _____ in the location ______ from ______", style: Theme.of(context).textTheme.headline4)),
+                child: new Text("You have recieved a potty alert of $args in the location ______ from ______", style: Theme.of(context).textTheme.headline4)),
             RaisedButton(
               onPressed: () {
                 // SAVE POTTY ALERT SOMEHOW USING JSON FILES
