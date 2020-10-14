@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hendrix_potty/read_and_write_data.dart';
 import 'package:hendrix_potty/send_receive.dart';
 
+import 'alert.dart';
 import 'friend.dart';
 import 'friend_list.dart';
 
@@ -24,17 +27,44 @@ class SendingPage extends StatefulWidget {
 }
 
 class _SendingPageState extends State<SendingPage> {
-  List alertList;
-  List friends;
-  String currentAlert = "Alert 1";
-  String currentFriend = "Friend 1";
+  AlertList alertList;
+  FriendList friends;
+  Alert currentAlert;
+  Friend currentFriend = Friend("none", "Choose Friend");
   TextStyle _ts;
 
+  @override
+  void initState() {
+    alertList = AlertList();
+    friends = FriendList();
+    super.initState();
+    loadAlertsFromMemory().then((memoryAlerts) {
+      setState(() {
+        alertList = memoryAlerts;
+        if (alertList.alerts.isEmpty) {
+          alertList.addAlert(Alert(true, "Choose Potty Alert", "Example"));
+          currentAlert = alertList.alerts[0];
+        } else {
+          currentAlert = alertList.alerts[0];
+        }
+      });
+    });
+    loadFriendsFromMemory().then((memoryFriends) {
+      setState(() {
+        friends = memoryFriends;
+        if (friends.friends.isEmpty) {
+          friends.addFriend(Friend("none", "Choose Friend"));
+          currentFriend = friends.friends[0];
+        } else {
+          currentFriend = friends.friends[0];
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    _ts = Theme.of(context).textTheme.headline4;
-    friends = ["Friend 1","Friend 2","Friend 3"];
+    _ts = Theme.of(context).textTheme.headline6;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,18 +77,18 @@ class _SendingPageState extends State<SendingPage> {
           children: <Widget>[
             DropdownButton(
               value: currentFriend,
-              onChanged: (String newFriend) {
+              onChanged: (Friend newFriend) {
                 setState(() {
-                  print("Type changed to " + newFriend);
+                  print("Type changed to " + newFriend.name);
                   currentFriend = newFriend;
                 });
               },
-              items: ["Friend 1","Friend 2","Friend 3"].map((String currentFriend) {
+              items: friends.friends.map((Friend currentFriend) {
                 return DropdownMenuItem(
                   value: currentFriend,
                   child: Row(
                     children: <Widget>[
-                      Text(currentFriend, style: _ts),
+                      Text(currentFriend.name, style: _ts),
                     ],
                   ),
                 );
@@ -67,18 +97,20 @@ class _SendingPageState extends State<SendingPage> {
             ),
             DropdownButton(
               value: currentAlert,
-              onChanged: (String newAlert) {
+              onChanged: (Alert newAlert) {
                 setState(() {
-                  print("Type changed to " + newAlert);
+                  print("Type changed to " + newAlert.description);
                   currentAlert = newAlert;
                 });
               },
-              items: ["Alert 1","Alert 2","Alert 3"].map((String currentAlert) {
+              items: alertList.alerts.map((Alert currentAlert) {
                 return DropdownMenuItem(
                   value: currentAlert,
                   child: Row(
                     children: <Widget>[
-                      Text(currentAlert, style: _ts),
+                      Text(currentAlert.isHappy ? "Happy" : "Sad" + ": " +
+                          currentAlert.location + ": " +
+                          currentAlert.description, style: _ts),
                     ],
                   ),
                 );
@@ -87,7 +119,7 @@ class _SendingPageState extends State<SendingPage> {
             ),
             RaisedButton(
               onPressed: () {
-                SendReceive().send("Happy", Friend("127.0.0.1", "Self"));
+                SendReceive().send(currentAlert, currentFriend);
                 Navigator.pop(context);
               },
               child: Text("Send Alert"),
@@ -101,6 +133,13 @@ class _SendingPageState extends State<SendingPage> {
   Future<FriendList> loadFriendsFromMemory() async {
     FriendList toReturn = FriendList();
     toReturn = await ReadAndWriteData().readData(toReturn, "FriendListFile");
+    return toReturn;
+  }
+
+  Future<AlertList> loadAlertsFromMemory() async {
+    AlertList toReturn = AlertList();
+    toReturn = await ReadAndWriteData().readData(toReturn, "AlertListFile");
+    print(toReturn.alerts);
     return toReturn;
   }
 }

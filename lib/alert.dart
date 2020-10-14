@@ -10,16 +10,23 @@ class Alert {
   Alert(this.isHappy, this.location, this.description);
 
   Alert.fromJson(Map<String, dynamic> jsonObject) {
-    this.isHappy = jsonObject['isHappy'] == true;
+    this.isHappy = jsonObject['isHappy'] == "true";
     this.location = jsonObject['location'];
     this.description = jsonObject['description'];
   }
 
   String toJson() {
-    return '{"isHappy": $isHappy, '
+    return '{"isHappy": "$isHappy", '
         '"location": "$location", '
         '"description": "$description"}';
   }
+
+  bool operator == (dynamic other) =>
+      other != null && other is Alert && other.isHappy == isHappy && other.location == location;
+
+  @override
+  int get hashCode => super.hashCode;
+
 }
 
 class AlertList extends JsonConvertible{

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
 
+import 'alert.dart';
+
 class AlertPage extends StatefulWidget {
   AlertPage({Key key, this.title}) : super(key: key);
 
@@ -26,14 +28,17 @@ class _AlertPageState extends State<AlertPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement friend get from storage
-    final String args = ModalRoute.of(context).settings.arguments;
+    final Alert args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
             Flexible(
-                child: new Text("You have received a potty alert of $args in the location ______ from ______", style: Theme.of(context).textTheme.headline4)),
+                child: new Text("You have received a potty alert of " +
+                    (args.isHappy ? "'Happy'" : "'Sad'") + " in the location '" +
+                    args.location + "' with description '" + args.description + "'.",
+                    style: Theme.of(context).textTheme.headline4)),
             RaisedButton(
               onPressed: () {
                 // SAVE POTTY ALERT SOMEHOW USING JSON FILES

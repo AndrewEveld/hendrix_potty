@@ -1,4 +1,7 @@
+import 'dart:core';
 import 'dart:io';
+
+import 'alert.dart';
 
 const int ourPort = 6666;
 
@@ -13,10 +16,10 @@ class Friend {
     this.name = jsonObject['name'];
   }
 
-  Future<SocketOutcome> sendTo(String message) async {
+  Future<SocketOutcome> sendTo(Alert message) async {
     try {
       Socket socket = await Socket.connect(ipAddress, ourPort);
-      socket.write(message);
+      socket.write(message.toJson());
       socket.close();
       return SocketOutcome();
     } on SocketException catch (e) {
@@ -32,6 +35,11 @@ class Friend {
     return jsonString;
   }
 
+  bool operator == (dynamic other) =>
+      other != null && other is Friend && other.name == name && other.ipAddress == ipAddress;
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 class SocketOutcome {
