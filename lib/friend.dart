@@ -32,7 +32,6 @@ class Friend {
     return jsonString;
   }
 
-
 }
 
 class SocketOutcome {

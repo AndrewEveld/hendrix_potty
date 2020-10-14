@@ -7,15 +7,6 @@ import 'package:string_validator/string_validator.dart';
 class FriendPage extends StatefulWidget {
   FriendPage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -29,29 +20,28 @@ class _FriendPageState extends State<FriendPage> {
   initState() {
     super.initState();
     listOfFriends = FriendList();
-    Friend self = Friend("172.0.0.1", "Self");
+    Friend self = Friend("127.0.0.1", "Self");
     listOfFriends.addFriend(self);
     loadFriendsFromMemory().then((friendsList) {
       setState(() {
         print(friendsList.friends);
-        listOfFriends = friendsList;
+        listOfFriends = friendsList.friends.isEmpty ? listOfFriends : friendsList;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement friend get from storage
     return Scaffold(
       appBar: AppBar(
         title: Text("Friends"),
-        actions: getActionIcons(),
       ),
       body: Center(
         child: ListView(
           children: createFriendListWidget(listOfFriends),
         ),
       ),
+      floatingActionButton: addFriendButton(),
     );
   }
 
@@ -61,19 +51,21 @@ class _FriendPageState extends State<FriendPage> {
     for (Friend friend in friendListForWidgetList.friends) {
       Widget elementToAdd = createFriendListElement(friend);
       listToReturn.add(elementToAdd);
+      listToReturn.add(Divider(
+        color: Colors.black,
+        height: 1,
+      ));
     }
     return listToReturn;
   }
 
   Widget createFriendListElement(Friend friendForElement) {
-    return GestureDetector(
-      child: Container(
+    return
+       Container(
         height: 50,
         color: Colors.deepOrangeAccent,
-        child: Center(child: Text(friendForElement.name)),
-      ),
-      onTap: addFriend,
-    );
+        child: Center(child: Text(friendForElement.name + ": " + friendForElement.ipAddress)),
+      );
   }
 
   Future<FriendList> loadFriendsFromMemory() async {
@@ -86,42 +78,28 @@ class _FriendPageState extends State<FriendPage> {
     await ReadAndWriteData().writeJsonToFile(listOfFriends, "FriendListFile");
   }
 
-  List<Widget> getActionIcons() {
-    List<Widget> toReturn = List();
-    toReturn.add(addFriendIcon());
-    return toReturn;
-  }
-
-  Widget addFriendIcon() {
-    return IconButton(
-        icon: const Icon(Icons.account_circle),
+  Widget addFriendButton() {
+    return FloatingActionButton(
         tooltip: "Add a Friend",
         onPressed: promptFriendDialog,
+        child: Icon(Icons.add),
     );
   }
 
-  void addFriend() {
-    setState(() {
-      listOfFriends.addFriend(Friend("IP", "New Friend"));
-    });
-    writeFriendsListToMemory().then((value) {
-      print("Data saved");
-    });
-
-  }
   // inspired by Hendrix Cat Finder https://github.com/ericpinter/hendrix_cat_finder
   Future<void> promptFriendDialog() async {
     await showDialog(
       context: context,
       builder: (_) => FriendAlertDialog().build(context),
       barrierDismissible: true,
-    ).then((ip) {
-      if (ip != null) {
+    ).then((friend) {
+      if (friend != null) {
         setState(() {
-          listOfFriends.addFriend(Friend(ip, "Friend $ip"));
+          listOfFriends.addFriend(Friend(friend[0], friend[1]));
+          writeFriendsListToMemory();
         });
       }
-      print(ip);
+      print(friend);
     });
   }
 
@@ -132,6 +110,7 @@ class _FriendPageState extends State<FriendPage> {
 class FriendAlertDialog {
   final _formKey = GlobalKey<FormState>();
   String friendIp;
+  String friendName;
 
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -142,22 +121,8 @@ class FriendAlertDialog {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'IP address',
-                ),
-                onSaved: (ip) {
-                  friendIp = ip;
-                },
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  } else if (!isIP(value, 4)) {
-                    return 'Please enter a valid IPv4 address';
-                  }
-                  return null;
-                },
-              ),
+              inputTextForm(true),
+              inputTextForm(false),
             ],
           ),
         ),
@@ -166,11 +131,36 @@ class FriendAlertDialog {
             onPressed: () {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                Navigator.pop(context, friendIp);
+                Navigator.pop(context, [friendIp, friendName]);
               }
             },
             child: Text("Submit"),
           )
         ]);
+  }
+
+  Widget inputTextForm(bool isIP) {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: isIP ? "IP Address" : "Name",
+      ),
+      onSaved: (value) {
+        if (isIP) {
+          friendIp = value;
+        } else {
+          friendName = value;
+        }
+      },
+      validator: isIP ? ipAddressValidator : (doNothing) {return null;},
+    );
+  }
+
+  String ipAddressValidator(String ipAddressToValidate) {
+    if (ipAddressToValidate.isEmpty) {
+      return 'Please enter some text';
+    } else if (!isIP(ipAddressToValidate, 4)) {
+      return 'Please enter a valid IPv4 address';
+    }
+    return null;
   }
 }

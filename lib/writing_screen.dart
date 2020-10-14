@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hendrix_potty/read_and_write_data.dart';
+
+import 'alert.dart';
 
 class WritingPage extends StatefulWidget {
   WritingPage({Key key, this.title}) : super(key: key);
@@ -19,7 +22,7 @@ class WritingPage extends StatefulWidget {
 }
 
 class _WritingPageState extends State<WritingPage> {
-  String PottyType = "Happy";
+  String pottyType = "Happy";
   String location = "";
   String description = "";
   TextStyle _ts;
@@ -42,11 +45,11 @@ class _WritingPageState extends State<WritingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             DropdownButton(
-              value: PottyType,
+              value: pottyType,
               onChanged: (String newPotty) {
                 setState(() {
                   print("Type changed to " + newPotty);
-                  PottyType = newPotty;
+                  pottyType = newPotty;
                 });
               },
               items: ["Happy", "Sad"].map((String pottyType) {
@@ -68,9 +71,11 @@ class _WritingPageState extends State<WritingPage> {
             RaisedButton(
               onPressed: () {
                 location = locationController.text;
-                description = descriptionController.text;
-                // SAVE POTTY ALERT SOMEHOW USING JSON FILES
-                Navigator.pop(context);
+                if (location != "") {
+                  description = descriptionController.text;
+                  writeAlertToMemory();
+                  Navigator.pop(context);
+                }
               },
               child: Text("Save Alert"),
             ),
@@ -78,5 +83,21 @@ class _WritingPageState extends State<WritingPage> {
         ),
       ),
     );
+  }
+
+  writeAlertToMemory() {
+    String filename = "AlertListFile";
+    loadAlertsFromMemory().then((alertList) {
+      Alert newAlert = Alert(this.pottyType == "Happy", this.location, this.description);
+      alertList.addAlert(newAlert);
+      ReadAndWriteData().writeJsonToFile(alertList, filename);
+    });
+  }
+
+  Future<AlertList> loadAlertsFromMemory() async {
+    AlertList toReturn = AlertList();
+    toReturn = await ReadAndWriteData().readData(toReturn, "AlertListFile");
+    print(toReturn.alerts);
+    return toReturn;
   }
 }

@@ -32,6 +32,13 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.teal,
+        textTheme: TextTheme(
+          bodyText1: TextStyle(),
+          bodyText2: TextStyle(),
+        ).apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -120,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
       width: 300,
       height: 50,
       child:RaisedButton(
-          child: Text(buttonText),
+          child: Text(buttonText, style: TextStyle(color: Colors.white),),
           color: Colors.deepOrangeAccent,
           onPressed: () {
             Navigator.pushNamed(context, route);

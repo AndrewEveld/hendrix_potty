@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hendrix_potty/read_and_write_data.dart';
 import 'package:hendrix_potty/send_receive.dart';
 
 import 'friend.dart';
+import 'friend_list.dart';
 
 class SendingPage extends StatefulWidget {
   SendingPage({Key key, this.title}) : super(key: key);
@@ -94,5 +96,11 @@ class _SendingPageState extends State<SendingPage> {
         ),
       ),
     );
+  }
+
+  Future<FriendList> loadFriendsFromMemory() async {
+    FriendList toReturn = FriendList();
+    toReturn = await ReadAndWriteData().readData(toReturn, "FriendListFile");
+    return toReturn;
   }
 }
