@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
+import 'package:hendrix_potty/read_and_write_data.dart';
 
 import 'alert.dart';
 
@@ -23,12 +24,11 @@ class AlertPage extends StatefulWidget {
 }
 
 class _AlertPageState extends State<AlertPage> {
-  List<List> savedAlerts = [];
+  Alert receivedAlert;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement friend get from storage
-    final Alert args = ModalRoute.of(context).settings.arguments;
+    receivedAlert = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Center(
         child: Column(
@@ -36,25 +36,36 @@ class _AlertPageState extends State<AlertPage> {
           children: <Widget> [
             Flexible(
                 child: new Text("You have received a potty alert of " +
-                    (args.isHappy ? "'Happy'" : "'Sad'") + " in the location '" +
-                    args.location + "' with description '" + args.description + "'.",
+                    (receivedAlert.isHappy ? "'Happy'" : "'Sad'") + " in the location '" +
+                    receivedAlert.location + "' with description '" + receivedAlert.description + "'.",
                     style: Theme.of(context).textTheme.headline4)),
-            RaisedButton(
-              onPressed: () {
-                // SAVE POTTY ALERT SOMEHOW USING JSON FILES
-                Navigator.pop(context);
-              },
-              child: Text("Save"),
-            ),
-            RaisedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("Discard"),
-            ),
+            SizedBox(height:20),
+            uniformButton("Save", true),
+            SizedBox(height:20),
+            uniformButton("Discard", false),
           ],
         ),
       ),
     );
   }
+
+  // Inspired by the Boggle App https://github.com/Haedge/Project-2
+  Widget uniformButton(String buttonText, bool isSaving) {
+    return Container(
+      width: 300,
+      height: 50,
+      child:RaisedButton(
+          child: Text(buttonText, style: TextStyle(color: Colors.white),),
+          color: Colors.deepOrangeAccent,
+          onPressed: () {
+            if (isSaving)
+              ReadAndWriteData().writeAlertToMemory(receivedAlert.isHappy,
+                receivedAlert.location, receivedAlert.description);
+            Navigator.pop(context);
+          }
+      ),
+    );
+  }
+
+
 }

@@ -12,7 +12,7 @@ class SendReceive {
   int ourPort = 6666;
   Alert receivedAlert;
 
-  Future<String> setupServer(BuildContext context) async {
+  Future<Alert> setupServer(BuildContext context) async {
     try {
       print("waiting for message");
       ServerSocket server =
@@ -20,9 +20,9 @@ class SendReceive {
       server.listen((data) {
         receivedAlert = _listenToSocket(data, context);
       }); // StreamSubscription<Socket>
-      return "Alert received";
+      return receivedAlert;
     } on SocketException catch (e) {
-      return e.message;
+      return Alert(false, "", "");
     }
   }
 

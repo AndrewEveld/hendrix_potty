@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hendrix_potty/read_and_write_data.dart';
+import 'package:hendrix_potty/send_receive.dart';
 
 import 'alert.dart';
 
@@ -45,6 +46,7 @@ class _WritingPageState extends State<WritingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             DropdownButton(
+              dropdownColor: Colors.teal,
               value: pottyType,
               onChanged: (String newPotty) {
                 setState(() {
@@ -64,40 +66,47 @@ class _WritingPageState extends State<WritingPage> {
               }
               ).toList(),
             ),
-            SizedBox(width: 300,
-            child: TextField(controller: locationController, decoration: InputDecoration(labelText: "Location"))),
-            SizedBox(width: 300,
-                child: TextField(controller: descriptionController, decoration: InputDecoration(labelText: "Description (Optional)"))),
-            RaisedButton(
-              onPressed: () {
-                location = locationController.text;
-                if (location != "") {
-                  description = descriptionController.text;
-                  writeAlertToMemory();
-                  Navigator.pop(context);
-                }
-              },
-              child: Text("Save Alert"),
-            ),
+            SizedBox(height:20),
+            textBox("Location", locationController),
+            SizedBox(height:20),
+            textBox("Optional Description", descriptionController),
+            SizedBox(height:20),
+            uniformButton("Save Alert"),
           ],
         ),
       ),
     );
   }
 
-  writeAlertToMemory() {
-    String filename = "AlertListFile";
-    loadAlertsFromMemory().then((alertList) {
-      Alert newAlert = Alert(this.pottyType == "Happy", this.location, this.description);
-      alertList.addAlert(newAlert);
-      ReadAndWriteData().writeJsonToFile(alertList, filename);
-    });
+  Widget uniformButton(String text) {
+    return Container(
+      width: 300,
+      height: 50,
+      child: RaisedButton(
+          child: Text(text, style: TextStyle(color: Colors.white),),
+          color: Colors.deepOrangeAccent,
+          onPressed: () {
+            location = locationController.text;
+            if (location != "") {
+              description = descriptionController.text;
+              ReadAndWriteData().writeAlertToMemory(
+                  pottyType == "Happy", location, description).then((none) {
+                Navigator.pop(context);
+              });
+            }
+          }
+      ),
+    );
   }
 
-  Future<AlertList> loadAlertsFromMemory() async {
-    AlertList toReturn = AlertList();
-    toReturn = await ReadAndWriteData().readData(toReturn, "AlertListFile");
-    print(toReturn.alerts);
-    return toReturn;
+  Widget textBox(String text, TextEditingController controller) {
+    return SizedBox(width: 300,
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: text,
+          ),
+        )
+    );
   }
 }

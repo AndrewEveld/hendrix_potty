@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hendrix_potty/friend.dart';
 import 'package:hendrix_potty/friend_list.dart';
 import 'package:hendrix_potty/read_and_write_data.dart';
+import 'package:hendrix_potty/send_receive.dart';
 import 'package:string_validator/string_validator.dart';
+
+import 'alert.dart';
 
 class FriendPage extends StatefulWidget {
   FriendPage({Key key, this.title}) : super(key: key);
@@ -15,9 +18,13 @@ class FriendPage extends StatefulWidget {
 
 class _FriendPageState extends State<FriendPage> {
   FriendList listOfFriends;
+  AlertList listOfAlerts;
+  bool isFriendList;
+  Friend selectedFriend;
 
   @override
   initState() {
+    isFriendList = true;
     super.initState();
     listOfFriends = FriendList();
     Friend self = Friend("127.0.0.1", "Self");
@@ -34,11 +41,12 @@ class _FriendPageState extends State<FriendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Friends"),
+        title: Text("Send Potty Alert"),
       ),
       body: Center(
         child: ListView(
-          children: createFriendListWidget(listOfFriends),
+          children: isFriendList ? createFriendListWidget(listOfFriends)
+              : createAlertListWidget(listOfAlerts),
         ),
       ),
       floatingActionButton: addFriendButton(),
@@ -48,6 +56,7 @@ class _FriendPageState extends State<FriendPage> {
 
   List<Widget> createFriendListWidget(FriendList friendListForWidgetList) {
     List<Widget> listToReturn = List();
+    listToReturn.add(createInstructionElement("Select Friend to Send Potty Alert to Them:"));
     for (Friend friend in friendListForWidgetList.friends) {
       Widget elementToAdd = createFriendListElement(friend);
       listToReturn.add(elementToAdd);
@@ -59,13 +68,101 @@ class _FriendPageState extends State<FriendPage> {
     return listToReturn;
   }
 
+  List<Widget> createAlertListWidget(AlertList alertListForWidgetList) {
+    List<Widget> listToReturn = List();
+    listToReturn.add(createInstructionElement("Select Potty Alert to Send to Friend:"));
+    for (Alert alert in alertListForWidgetList.alerts) {
+      Widget elementToAdd = createAlertListElement(alert);
+      listToReturn.add(elementToAdd);
+      listToReturn.add(Divider(
+        color: Colors.black,
+        height: 1,
+      ));
+    }
+    return listToReturn;
+  }
+
   Widget createFriendListElement(Friend friendForElement) {
+    String friendText = "${friendForElement.ipAddress}: ${friendForElement.name}";
     return
-       Container(
+       friendTapHandler(createListElement(friendText), friendForElement);
+  }
+
+  Widget createAlertListElement(Alert alertForElement) {
+    String happyOrNot = alertForElement.isHappy ? "Happy" : "Sad";
+    String alertText = "$happyOrNot: ${alertForElement.location}";
+    return
+        alertTapHandler(createListElement(alertText), alertForElement);
+  }
+
+  Widget createListElement(String text) {
+    return
+      Container(
         height: 50,
         color: Colors.deepOrangeAccent,
-        child: Center(child: Text(friendForElement.name + ": " + friendForElement.ipAddress)),
+        child: Center(
+          child: Text(
+            text
+          ),
+        ),
+    );
+  }
+
+  Widget createInstructionElement(String text) {
+    return
+        Container(
+          height: 50,
+          color: Colors.teal,
+          child: Center(
+            child: Text(
+              text
+            ),
+          ),
+        );
+  }
+
+  Widget friendTapHandler(Widget friendListElement, Friend friend) {
+    return
+        GestureDetector(
+          onTap: () {handleListElementTap(friend: friend);},
+          child: friendListElement,
+        );
+  }
+
+  Widget alertTapHandler(Widget alertListElement, Alert alert) {
+    return
+      GestureDetector(
+        onTap: () {handleListElementTap(alert: alert);},
+        child: alertListElement,
       );
+  }
+
+  handleListElementTap({Alert alert, Friend friend}) {
+    if (friend != null) {
+      selectedFriend = friend;
+      isFriendList = false;
+      setAlertListFromSaved();
+    }
+    if (alert != null) {
+      print('alert pressed!!');
+      SendReceive().send(alert, selectedFriend);
+      Navigator.pop(context);
+    }
+  }
+
+  void setAlertListFromSaved() {
+    loadAlertsFromMemory().then((alertList) {
+      setState(() {
+        print(alertList.alerts);
+        listOfAlerts = alertList;
+      });
+    });
+  }
+
+  Future<AlertList> loadAlertsFromMemory() async {
+    AlertList toReturn = AlertList();
+    toReturn = await ReadAndWriteData().readData(toReturn, "AlertListFile");
+    return toReturn;
   }
 
   Future<FriendList> loadFriendsFromMemory() async {
@@ -81,7 +178,13 @@ class _FriendPageState extends State<FriendPage> {
   Widget addFriendButton() {
     return FloatingActionButton(
         tooltip: "Add a Friend",
-        onPressed: promptFriendDialog,
+        onPressed: isFriendList ? promptFriendDialog
+            : () {Navigator.pushNamed(context, "/writing").then((value) {
+              setState(() {
+                setAlertListFromSaved();
+              });
+        });
+            },
         child: Icon(Icons.add),
     );
   }
